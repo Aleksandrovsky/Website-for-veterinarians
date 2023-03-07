@@ -1,0 +1,29 @@
+{% extends "navbar.html" %}
+
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Messages</title>
+    </head>
+{% block content %}
+<body>
+    <header style="justify-content: center;">
+        <form action="" method="post">
+
+            {{ button.csrf_token }}
+            
+            {% for i in messages_site %}
+                <p><b>From: </b>{{ i[0] }}. <b>Did accept terms? - {{ i[2] }}</b></p>
+                <p><b>Message: {{ i[1] }}</b></p>
+                <p><a href="{{ url_for('bp_reply_form.reply', email=i[0], msg=i[1]) }}">Reply</a></p>
+                <br>
+            {% endfor %}
+        </form> 
+    </header>
+</body>
+</html>
+
+{% endblock %}
