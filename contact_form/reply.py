@@ -65,7 +65,7 @@ def send_email(email, recipent_email, client_msg):
     """
 
     message_to_send = MIMEMultipart('alternative')
-    message_to_send['Subject'] = 'Message from Aleksander'
+    message_to_send['Subject'] = 'Veterinarians- answer to yours question.'
     message_to_send['From'] = 'kretexus@onet.pl'
     message_to_send['To'] = recipent_email
     message_to_send.attach(MIMEText(html_msg))
