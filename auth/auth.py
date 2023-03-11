@@ -28,8 +28,8 @@ table_name = 'users'
 
 smtp_adress = 'smtp.poczta.onet.pl'
 port = 465
-login = 'kretexus@onet.pl'
-password = 'boss1001'
+login = ''
+password = ''
 
 
 
