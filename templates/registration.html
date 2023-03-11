@@ -1,0 +1,37 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registration</title>
+    </head>
+    <body>
+    <header>
+        <p>
+            Rejestracja
+        </p>
+    </header>
+    <form method="POST">
+        
+        {{ form.csrf_token }}
+        
+        <br>
+        <p>{{ form.email.label }}</p>
+        <p>{{ form.email }}</p>
+        <p>{{ form.username.label }}</p>
+        <p>{{ form.username }}</p>
+        <p>{{ form.password.label }}</p>
+        <p>{{ form.password }}</p>
+        <p>{{ form.password_2.label }}</p>
+        <p>{{ form.password_2 }}</p>
+        <p>{{ form.submit }}</p>
+    </form>
+</body>
+</html>
+
+{% endblock %}
