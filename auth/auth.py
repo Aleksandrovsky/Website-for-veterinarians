@@ -16,20 +16,22 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from dotenv import load_dotenv
+
 
 
 #INITIALIZE
 
 bp_auth = Blueprint('bp_auth_form', __name__, template_folder='templates')
-
-db_path = (os.getcwd() + '/db_folder/database.db')
+db_path = (os.getcwd() + '/db_folder/' + os.getenv('DB_NAME'))
+load_dotenv()
 
 table_name = 'users'
 
 smtp_adress = 'smtp.poczta.onet.pl'
 port = 465
-login = '#'
-password = '#'
+login = os.getenv('LOGIN')
+password = os.getenv('PASSWORD')
 
 
 
@@ -173,6 +175,6 @@ class CheckCode(FlaskForm):
     code = IntegerField('Wpisz kod, który wysłaliśmy na adres e-mail podany w formularzu', validators=[DataRequired(), Length(6)])
     submit =  SubmitField('Wyślij')
     
-# if __name__ == '__main__':
-    
-#     print(generate_auth_code())
+if __name__ == '__main__':
+       
+    print(generate_auth_code())
