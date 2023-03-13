@@ -9,20 +9,24 @@ from db.db import create_new_db, create_table_in_db, clear_table
 import os
 import sqlite3
 
+from dotenv import load_dotenv
+
 
 
 
 """ BASIC INITIALIZATION """
 
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = 'dndsk!fngbdjksbj543fk2b..74dsnfds'
+app.secret_key = os.getenv('SECRET_KEY')
 
 app.register_blueprint(bp_contact)
 app.register_blueprint(bp_index)
 app.register_blueprint(bp_auth)
 app.register_blueprint(bp_reply)
 
-db_path = os.getcwd() + '/db_folder/database.db'
+db_path = (os.getcwd() + '/db_folder/' + str(os.getenv('DB_NAME')))
 
 
 

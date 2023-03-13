@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from db.db import add_data
+from db.db import add_data, get_data
 
 import os
 
@@ -20,24 +20,25 @@ from dotenv import load_dotenv
 
 
 
-#INITIALIZE
+#INITIALIZATION
 
 bp_auth = Blueprint('bp_auth_form', __name__, template_folder='templates')
-db_path = (os.getcwd() + '/db_folder/' + os.getenv('DB_NAME'))
+db_path = (os.getcwd() + '/db_folder/' + str(os.getenv('DB_NAME')))
 load_dotenv()
 
 table_name = 'users'
 
 smtp_adress = 'smtp.poczta.onet.pl'
 port = 465
-login = os.getenv('LOGIN')
-password = os.getenv('PASSWORD')
+email_login = os.getenv('LOGIN')
+email_password = os.getenv('PASSWORD')
 
 
 
 #ROUTES
 
 @bp_auth.route('/login')
+@bp_auth.route('/login/')
 def login():
     return render_template('login.html')
 
@@ -45,6 +46,7 @@ def login():
 
 
 @bp_auth.route('/registration', methods=["GET", "POST"])
+@bp_auth.route('/registration/', methods=["GET", "POST"])
 def registration():
     
     form = Registration()
@@ -57,55 +59,91 @@ def registration():
         username = form.username.data
         password = form.password.data
         hash_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
-        
-        if check_password_hash(hash_password, password):
             
-            data_dict['email'] = email
-            data_dict['username'] = username
-            data_dict['hash_password'] = hash_password
-            data_dict['admin'] = 0
+        db_values = ['email', 'username']
+        db_query = get_data(db_values, db_path, table_name)
+            
+        for e, u in db_query:
+            
+            if e == email:
+                
+                session['problem'] = 'Email istnieje'
+                print(session['problem'])
+                return redirect(url_for('bp_auth_form.reg_no_ok'))
+            
+            else:
+                
+                if u == username:
+                    
+                    session['problem'] = 'Użytkownik istnieje'
+                    print(session['problem'])
+                    return redirect(url_for('bp_auth_form.reg_no_ok'))
+                    
+                else:
+                    
+                    if check_password_hash(hash_password, password):
+                        
+                        data_dict['email'] = email
+                        data_dict['username'] = username
+                        data_dict['hash_password'] = hash_password
+                        data_dict['admin'] = 0
 
-            session['data_dict'] = data_dict
-        else: 
-            raise ValueError('Hash password not match with password')
-        
-        """ TRZEBA ZROBIĆ SPRAWDZENIE CZY DANY UŻYTKOWNIK ISTNIEJE W DB """
-        """ TRZEBA ZROBIĆ AUTENTYKACJĘ MEJLEM """
-        
-        
-        return redirect(url_for('bp_auth_form.check_code', username=username))   
-     
+                        auth_code = generate_auth_code()
+                        
+                        session[f'data_dict_{username}'] = data_dict
+                        session[f'auth_code_{username}'] = auth_code
+                        
+                        send_auth_code(auth_code, email)
+                        
+                        return redirect(url_for('bp_auth_form.check_code', username=username))  
+                    
+                    else: 
+                        raise ValueError('Hash password not match with password')
+                     
     return render_template('registration.html', form=form)
 
 
 
 @bp_auth.route('/registration/check_code/<username>', methods=["GET", "POST"])
+@bp_auth.route('/registration/check_code/<username>/', methods=["GET", "POST"])
 def check_code(username):
     
     form_check = CheckCode()
     
-    data_dict = session['data_dict']
-    
-    recipent_email = data_dict['email']
-    
-    auth_code = generate_auth_code()
-    send_auth_code(auth_code, recipent_email)
+    data_dict = session[f'data_dict_{username}']
+    auth_code = session[f'auth_code_{username}']
     
     if form_check.validate_on_submit():
+        
         code = form_check.code.data
         
         if code == auth_code:
             
             add_data(data_dict, table_name, db_path)
-            return redirect(url_for('bp_auth_form.reg_ok'))
+            print('Użytkownik dodany')
+            
+            return redirect(url_for('bp_auth_form.reg_ok', username=username))
+        
+        else:
+            print('Kod aktywacyjny niepoprawny!')
 
     return render_template('check_code.html', form_check = form_check)
 
 
 
-@bp_auth.route('/registration/ok')
-def reg_ok():
+@bp_auth.route('/registration/<username>/done')
+@bp_auth.route('/registration/<username>/done/')
+def reg_ok(username):
     return render_template('reg_ok.html')
+
+
+@bp_auth.route('/registration/problem', methods=["GET", "POST"])
+@bp_auth.route('/registration/problem/', methods=["GET", "POST"])
+def reg_no_ok():
+    
+    problem_info = session['problem']
+    
+    return render_template('reg_no_ok.html', problem_info=problem_info)
 
 
 
@@ -140,7 +178,7 @@ def send_auth_code(auth_code, recipent_email):
     code, msg = smtp_object.ehlo()
 
     if code == 250:
-        login_code, login_msg = smtp_object.login(login, password)
+        login_code, login_msg = smtp_object.login(email_login, email_password)
         print('Connection ok.')
 
         if login_code == 235:
@@ -172,9 +210,6 @@ class Registration(FlaskForm):
     
 class CheckCode(FlaskForm):
     
-    code = IntegerField('Wpisz kod, który wysłaliśmy na adres e-mail podany w formularzu', validators=[DataRequired(), Length(6)])
+    code = StringField('Wpisz kod, który wysłaliśmy na adres e-mail podany w formularzu', validators=[DataRequired()])
     submit =  SubmitField('Wyślij')
     
-if __name__ == '__main__':
-       
-    print(generate_auth_code())
