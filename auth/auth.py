@@ -1,7 +1,6 @@
-from flask import Flask, Blueprint, render_template, url_for, redirect, session
+from flask import Blueprint, render_template, url_for, redirect, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms import ValidationError, IntegerField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -21,10 +20,11 @@ from dotenv import load_dotenv
 
 
 #INITIALIZATION
+load_dotenv()
 
 bp_auth = Blueprint('bp_auth_form', __name__, template_folder='templates')
+
 db_path = (os.getcwd() + '/db_folder/' + str(os.getenv('DB_NAME')))
-load_dotenv()
 
 table_name = 'users'
 all_auth_codes = []
@@ -37,47 +37,6 @@ email_password = os.getenv('PASSWORD')
 
 
 #ROUTES
-
-@bp_auth.route('/login', methods=["GET", "POST"])
-@bp_auth.route('/login/', methods=["GET", "POST"])
-def login():
-    
-    login_form = Login()
-    
-    if login_form.validate_on_submit():
-        
-        login_values = ['email', 'hash_password']
-        login_db_query = get_data(login_values, db_path, table_name)
-        
-        login_email = login_form.email.data
-        login_password = login_form.password.data    
-        
-        for e, h in login_db_query:
-            
-            if e == login_email:
-                
-                if check_password_hash(h, login_password):
-                    
-                    print('Brawo zostałeś zalogowany')
-                    return redirect(url_for('bp_contact_form.contact'))
-                    
-                else:
-                    
-                    print('Niepoprawne hasło')
-                    return redirect(url_for('bp_auth_form.reg_no_ok'))
-            
-            else:
-                
-                print('Niepoprawny adres email.')
-                return redirect(url_for('bp_auth_form.reg_no_ok'))
-                            
-        #return redirect(url_for('_index.index'))
-        
-    return render_template('login.html', login_form=login_form)
-
-
-
-
 @bp_auth.route('/registration', methods=["GET", "POST"])
 @bp_auth.route('/registration/', methods=["GET", "POST"])
 def registration():
@@ -220,7 +179,6 @@ def reg_no_ok():
 
 
 #IT`S ONLY FOR TEST
-
 @bp_auth.route('/wyczysc')
 def czysc():
     session.clear()
@@ -229,7 +187,6 @@ def czysc():
 
 
 #FUNCTIONS
-
 def generate_auth_code():
     
     auth_code = []
@@ -286,7 +243,6 @@ def send_auth_code(auth_code, recipent_email):
 
 
 #CLASSES
-
 class Registration(FlaskForm):
 
     email = StringField('E-mail:', validators=[DataRequired(), Email(), Length(1,80)])
@@ -303,11 +259,3 @@ class CheckCode(FlaskForm):
     
     code = StringField('Wpisz kod, który wysłaliśmy na adres e-mail podany w formularzu', validators=[DataRequired()])
     submit =  SubmitField('Wyślij')
-    
-
-
-class Login(FlaskForm):
-    
-    email = StringField('Podaj adres e-mail', validators=[DataRequired(), Email()])
-    password = PasswordField('Podaj hasło: ', validators=[DataRequired()])
-    submit = SubmitField('Logowanie')

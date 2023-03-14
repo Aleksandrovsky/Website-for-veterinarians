@@ -3,6 +3,7 @@ from contact_form.contact_form import bp_contact
 from contact_form.reply import bp_reply
 from index.index import bp_index
 from auth.auth import bp_auth
+from login.login import bp_login
 
 from db.db import create_new_db, create_table_in_db, clear_table
 
@@ -13,9 +14,7 @@ from dotenv import load_dotenv
 
 
 
-
-""" BASIC INITIALIZATION """
-
+#INITIALIZATION
 load_dotenv()
 
 app = Flask(__name__)
@@ -25,14 +24,14 @@ app.register_blueprint(bp_contact)
 app.register_blueprint(bp_index)
 app.register_blueprint(bp_auth)
 app.register_blueprint(bp_reply)
+app.register_blueprint(bp_login)
 
 db_path = (os.getcwd() + '/db_folder/' + str(os.getenv('DB_NAME')))
 
 
 
 
-""" BEFORE FIRST REQUEST- CHECK DATABASE """
-
+#BEFORE FIRST REQUEST- CHECK DATABASE
 @app.before_first_request
 def before_first_request():
 
@@ -66,8 +65,7 @@ def before_first_request():
 
 
 
-""" ERRORS """
-
+#ERRORS
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -81,8 +79,7 @@ def intrenal_server_error(e):
 
 
 
-""" INITIALIZING FUNCTIONS """
-
+#INITIALIZING FUNCTIONS
 def check_folder():
 
     current_path = os.getcwd()
@@ -109,8 +106,7 @@ def check_db():
         
 
 
-""" MAIN """
-
+#MAIN
 if __name__ == '__main__':
 
     app.run(debug=True)
