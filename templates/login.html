@@ -11,10 +11,18 @@
         <title>Login</title>
     </head>
     <body>
-    <header>
-        <p>Tu będzie login</p>
-    </header>
-</body>
+        <form method='POST'>
+    
+        {{ login_form.csrf_token }}
+
+        <br>
+        <p>{{ login_form.email.label }}</p>
+        <p>{{ login_form.email }}</p>
+        <p>{{ login_form.password.label }}</p>
+        <p>{{ login_form.password }}</p>
+        <p>{{ login_form.submit }}</p>
+        </form>
+    </body>
 </html>
 
 {% endblock %}
