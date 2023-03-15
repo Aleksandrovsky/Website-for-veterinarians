@@ -19,16 +19,17 @@
                 <p>If healf or life yours pet is in danger- call me: 123-456-789</p>
                 <br>
                 <p></p>
-                <p>{{ form.email.label }}</p>
-                <p>{{ form.email }}</p>
+                <p>{{ form.email.label(class="form-label") }}</p>
+                <p>{{ form.email(class="form-control") }}</p>
                 <p></p>
-                <p>{{ form.message.label }}</p>
-                <p>{{ form.message }}</p>
+                <p>{{ form.message.label(class="form-label") }}</p>
+                <p>{{ form.message(class="form-control") }}</p>
                 <p></p>
-                <p>{{ form.accept.label }}</p>
-                <p>{{ form.accept }}</p>
+                <br>
+                <p>{{ form.accept.label(class="form-label") }}</p>
+                <p>{{ form.accept(class="form-check-input mt-0") }}</p>
                 <p></p>
-                <p>{{ form.submit }}</p>
+                <p>{{ form.submit(class="btn btn-outline-dark") }}</p>
             </form>
         </header>
         

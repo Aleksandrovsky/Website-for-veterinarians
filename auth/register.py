@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, url_for, redirect, session
+from flask import Blueprint, render_template, url_for, redirect, session, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
@@ -54,8 +54,12 @@ def registration():
             
         db_values = ['email', 'username']
         db_query = get_data(db_values, db_path, table_name)
+        
+        registered = False
 
         if len(db_query) < 1:
+            
+            print('Zapytanie IF: ', db_query)
             
             if check_password_hash(hash_password, password):
                         
@@ -73,6 +77,8 @@ def registration():
                 session[f'auth_code_{username}'] = auth_code
                         
                 send_auth_code(auth_code, email)
+                
+                flash('Na podany adres e-mail wysłaliśmy kod autoryzacyjny!')
                     
                 return redirect(url_for('bp_auth_form.check_code', username=username))  
             
@@ -80,47 +86,45 @@ def registration():
                 
                 raise ValueError('Hash password not match with password')
                      
-
         else:
             
-            for e, u in db_query:
+            while registered == False:
                 
-                if e == email:
+                for e, u in db_query:
                     
-                    session['problem'] = 'Email istnieje'
-                    print(session['problem'])
-                    return redirect(url_for('bp_auth_form.reg_no_ok'))
-                
-                else:
+                    if (e == email) or (u == username):
+                        
+                        if (e == email):
+                            flash('Istnieje już konto o podanym adresie e-mail!')
+                            return redirect(url_for('bp_auth_form.registration'))
+                        
+                        else:
+                            flash('Nazwa użytkownika jest zajęta!')
+                            return redirect(url_for('bp_auth_form.registration'))
+                        
+                if check_password_hash(hash_password, password):
                     
-                    if u == username:
-                        
-                        session['problem'] = 'Użytkownik istnieje'
-                        print(session['problem'])
-                        return redirect(url_for('bp_auth_form.reg_no_ok'))
-                        
-                    else:
-                        
-                        if check_password_hash(hash_password, password):
-                            
-                            data_dict['email'] = email
-                            data_dict['username'] = username
-                            data_dict['hash_password'] = hash_password
-                            data_dict['admin'] = 0
+                    data_dict['email'] = email
+                    data_dict['username'] = username
+                    data_dict['hash_password'] = hash_password
+                    data_dict['admin'] = 0
 
-                            auth_code = generate_auth_code()
-                            all_auth_codes.append(auth_code)
-                            print(all_auth_codes)
-                            
-                            session[f'data_dict_{username}'] = data_dict
-                            session[f'auth_code_{username}'] = auth_code
-                            
-                            send_auth_code(auth_code, email)
+                    auth_code = generate_auth_code()
+                    all_auth_codes.append(auth_code)
                     
-                            return redirect(url_for('bp_auth_form.check_code', username=username))  
-                        
-                        else: 
-                            raise ValueError('Hash password not match with password')
+                    session[f'data_dict_{username}'] = data_dict
+                    session[f'auth_code_{username}'] = auth_code
+                    
+                    send_auth_code(auth_code, email)
+                    
+                    registered = True
+                    
+                    flash('Na podany adres e-mail wysłaliśmy kod autoryzacyjny!')
+            
+                    return redirect(url_for('bp_auth_form.check_code', username=username))  
+                
+                else: 
+                    raise ValueError('Hash password not match with password')
                         
     
     return render_template('registration.html', form=form)
@@ -145,7 +149,7 @@ def check_code(username):
             add_data(data_dict, table_name, db_path)
             print('Użytkownik dodany')
             
-            return redirect(url_for('bp_auth_form.reg_ok', username=username))
+            return redirect(url_for('bp_auth_form.registration_ok', username=username))
         
         else:
             print('Kod aktywacyjny niepoprawny!')
@@ -156,7 +160,7 @@ def check_code(username):
 
 @bp_auth.route('/registration/<username>/done')
 @bp_auth.route('/registration/<username>/done/')
-def reg_ok(username):
+def registration_ok(username):
     
     session.pop(f'data_dict_{username}', None)
     
@@ -166,7 +170,7 @@ def reg_ok(username):
     
     session.pop(f'auth_code_{username}', None)
     
-    return render_template('reg_ok.html')
+    return render_template('registration_ok.html')
 
 
 @bp_auth.route('/registration/problem', methods=["GET", "POST"])

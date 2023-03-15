@@ -39,27 +39,39 @@ def login():
         login_email = login_form.email.data
         login_password = login_form.password.data    
         
+        logged_in = False
+        users_len = len(login_db_query)
+        counter = 0
         
-        for email, hash, user in login_db_query:
+        while logged_in == False:
             
-            if email == login_email:
+            if counter == users_len:
                 
-                if check_password_hash(hash, login_password):
-                    
-                    session[f'logged_in_{user}'] = True
-                    flash('Brawo zostałeś zalogowany')
-                    
-                    return redirect(url_for('bp_login_form.login_user', user=user))
-                    
-                else:
-                    
-                    print('Niepoprawne hasło')
-                    return redirect(url_for('bp_auth_form.reg_no_ok'))
+                flash('Niepoprawne dane logowania!')
+                
+                return redirect(url_for('bp_login_form.login'))
             
             else:
-                
-                print('Niepoprawny adres email.')
-                return redirect(url_for('bp_auth_form.reg_no_ok'))
+            
+                for email, hash, user in login_db_query:
+                    
+                    counter += 1
+                    
+                    if email == login_email:
+                        
+                        if check_password_hash(hash, login_password):
+                            
+                            session[f'logged_in_{user}'] = True
+                            flash('Zostałeś zalogowany')
+                            logged_in = True
+                            
+                            return redirect(url_for('bp_login_form.login_user', user=user))
+                            
+                        else:
+                            continue
+                        
+                    else:
+                        continue
                             
     if request.method == 'POST':
         

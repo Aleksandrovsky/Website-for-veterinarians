@@ -22,15 +22,23 @@
         {{ form.csrf_token }}
         
         <br>
-        <p>{{ form.email.label }}</p>
-        <p>{{ form.email }}</p>
-        <p>{{ form.username.label }}</p>
-        <p>{{ form.username }}</p>
-        <p>{{ form.password.label }}</p>
-        <p>{{ form.password }}</p>
-        <p>{{ form.password_2.label }}</p>
-        <p>{{ form.password_2 }}</p>
-        <p>{{ form.submit }}</p>
+        {{ form.email.label(class="form-label") }}
+        <br>
+        {{ form.email(class="form-control") }}
+        <br>
+        {{ form.username.label(class="form-label") }}
+        <br>
+        {{ form.username(class="form-control") }}
+        <br>
+        {{ form.password.label(class="form-label") }}
+        <br>
+        {{ form.password(class="form-control") }}
+        <br>
+        {{ form.password_2.label(class="form-label") }}
+        <br>
+        {{ form.password_2(class="form-control") }}
+        <br><br>
+        {{ form.submit(class="btn btn-outline-dark") }}
     </form>
 </body>
 </html>

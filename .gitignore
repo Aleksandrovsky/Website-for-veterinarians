@@ -3,3 +3,4 @@ TODO.txt
 zalozenia.txt
 .env
 venv/
+**.db
