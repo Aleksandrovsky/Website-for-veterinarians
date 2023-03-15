@@ -1,5 +1,4 @@
 flask
 flask_wtf
-flask-login
-sqlite3
 python-dotenv
+email_validator
