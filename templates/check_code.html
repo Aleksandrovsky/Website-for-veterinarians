@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registration</title>
+    </head>
+    <body>
+        <form method="POST">
+            
+            {{ form_check.csrf_token }}
+
+            <br>
+            <p>{{ form_check.code.label }}</p>
+            <p>{{ form_check.code }}</p>
+            <p>{{ form_check.submit }}</p>
+
+        </form>
+</body>
+</html>
+
+{% endblock %}

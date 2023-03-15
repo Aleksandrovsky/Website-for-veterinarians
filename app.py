@@ -1,28 +1,39 @@
-from flask import Flask
+from flask import Flask, render_template
 from contact_form.contact_form import bp_contact
 from contact_form.reply import bp_reply
 from index.index import bp_index
-from login.login import bp_login
+from auth.register import bp_auth
+from auth.login import bp_login
 
 from db.db import create_new_db, create_table_in_db, clear_table
 
 import os
 import sqlite3
 
+from dotenv import load_dotenv
+
+
+
+#INITIALIZATION
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = 'dndsk!fngbdjksbj543fk2b..74dsnfds'
+app.secret_key = os.getenv('SECRET_KEY')
 
 app.register_blueprint(bp_contact)
 app.register_blueprint(bp_index)
-app.register_blueprint(bp_login)
+app.register_blueprint(bp_auth)
 app.register_blueprint(bp_reply)
+app.register_blueprint(bp_login)
 
-db_path = os.getcwd() + '/db_folder/database.db'
+db_path = (os.getcwd() + '/db_folder/' + str(os.getenv('DB_NAME')))
 
 
 
+
+#BEFORE FIRST REQUEST- CHECK DATABASE
 @app.before_first_request
-def bfr():
+def before_first_request():
 
     con = sqlite3.connect(db_path)
     cur = con.cursor()
@@ -30,8 +41,6 @@ def bfr():
     table_messages_name = 'messages'
     table_users_name = 'users'
 
-    #clear_table(db_path,table_messages_name)
-    #clear_table(db_path, table_users_name)
     check_folder()
     check_db()
 
@@ -42,10 +51,9 @@ def bfr():
     }
 
     table_users_columns = {
-        'name': 'TEXT',
         'email': 'TEXT',
-        'password': 'TEXT',
-        'hash_passwrd': 'TEXT',
+        'username': 'TEXT',
+        'hash_password': 'TEXT',
         'admin': 'INTEGER'
     }
 
@@ -56,6 +64,22 @@ def bfr():
 
 
 
+
+#ERRORS
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+
+@app.errorhandler(500)
+def intrenal_server_error(e):
+    return render_template('500.html'), 500
+
+
+
+
+#INITIALIZING FUNCTIONS
 def check_folder():
 
     current_path = os.getcwd()
@@ -79,8 +103,10 @@ def check_db():
     else:
         create_new_db(current_path + '/db_folder/database.db')
         
+        
 
 
+#MAIN
 if __name__ == '__main__':
 
     app.run(debug=True)

@@ -1,4 +1,4 @@
-{% extends "navbar.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 
@@ -8,15 +8,21 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Vet</title>
+        <title>Login</title>
     </head>
     <body>
-    <header>
-        <p>
-            Tu będzie login.
-        </p>
-    </header>
-</body>
+        <form method='POST'>
+    
+        {{ login_form.csrf_token }}
+
+        <br>
+        <p>{{ login_form.email.label(class="form-label") }}</p>
+        <p>{{ login_form.email(class="form-control") }}</p>
+        <p>{{ login_form.password.label(class="form-label") }}</p>
+        <p>{{ login_form.password(class="form-control") }}</p>
+        <p>{{ login_form.submit(class="btn btn-outline-dark") }}</p>
+        </form>
+    </body>
 </html>
 
 {% endblock %}

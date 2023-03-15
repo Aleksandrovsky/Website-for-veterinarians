@@ -1,0 +1,10 @@
+
+<div class="navbar-end">
+    <button class="navbar-item" onclick="location.href='{{ url_for('bp_index_form.index') }}';">HOME</button>
+    <button class="navbar-item" onclick="location.href='{{ url_for('bp_contact_form.contact') }}';">CONTACT</button>
+    <button class="navbar-item" onclick="location.href='{{ url_for('bp_contact_form.messages') }}';">MESSAGES</button>    <br>
+</div>
+
+<div class="container">
+    {% block content %} {% endblock %}
+</div>

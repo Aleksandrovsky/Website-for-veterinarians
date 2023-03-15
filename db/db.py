@@ -90,8 +90,22 @@ def clear_table(db_path, table_name):
 	con.commit()
 	con.close()
 
-	print('Baza danych wyczyszczona. Usunięto ', cur.rowcount, 'pozycji w bazie danych!')
+	print(f'Tabela {table_name} wyczyszczona. Usunięto ', cur.rowcount, 'pozycji w bazie danych!')
 
+
+
+def delete_table(db_path, table_name):
+		
+	con = sqlite3.connect(db_path)
+	cur = con.cursor()
+
+	cur.execute(f'DROP TABLE {table_name};')
+	con.commit()
+	con.close()
+
+	print(f'Tabela {table_name} usunięta!')
+
+     
 if __name__ == '__main__':
 
 	table_columns = {
@@ -107,12 +121,14 @@ if __name__ == '__main__':
 	}
 
 
-	db_path = (os.getcwd() + '/db_folder/' + 'users' + '.db')
+	db_path = (os.getcwd() + '/db_folder/' + 'database.db')
+ 
 	#add_data(table_data, 'users', db_path)
 	#print(get_data(['password'], db_path,'users'))
 	
 	#get_data([],{},'AND',1,'users', db_path)
-	#clear_table(db_path, 'users')
+	delete_table(db_path, 'users')
+ 	#clear_table(db_path, 'users')
 	#create_new_db(new_db_path)
 	# db_name = input('Wprowadź nazwę bazy danych: ')
 	# table_name = input('Wprowadź nazwę tabeli: ')

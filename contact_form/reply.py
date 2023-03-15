@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Blueprint, url_for, redirect, request
+from flask import render_template, Blueprint, url_for, redirect, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
@@ -9,12 +9,17 @@ from email.mime.text import MIMEText
 
 import os
 
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 bp_reply = Blueprint('bp_reply_form', __name__, template_folder='templates')
 
 smtp_adress = 'smtp.poczta.onet.pl'
 port = 465
-login = 'kretexus@onet.pl'
-password = 'boss1001'
+login = os.getenv('LOGIN')
+password = os.getenv('PASSWORD')
 
 
 

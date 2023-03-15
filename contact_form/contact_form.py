@@ -12,7 +12,7 @@ bp_contact = Blueprint('bp_contact_form', __name__, template_folder='templates')
 
 info_from_site = {}
 
-db_path = os.getcwd() + '/db_folder/database.db'
+db_path = (os.getcwd() + '/db_folder/' + str(os.getenv('DB_NAME')))
 table_messages_name = 'messages'
 
 
