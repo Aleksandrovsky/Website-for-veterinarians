@@ -1,4 +1,4 @@
-{% extends "navbar.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 
@@ -16,11 +16,11 @@
         {{ login_form.csrf_token }}
 
         <br>
-        <p>{{ login_form.email.label }}</p>
-        <p>{{ login_form.email }}</p>
-        <p>{{ login_form.password.label }}</p>
-        <p>{{ login_form.password }}</p>
-        <p>{{ login_form.submit }}</p>
+        <p>{{ login_form.email.label(class="form-label") }}</p>
+        <p>{{ login_form.email(class="form-control") }}</p>
+        <p>{{ login_form.password.label(class="form-label") }}</p>
+        <p>{{ login_form.password(class="form-control") }}</p>
+        <p>{{ login_form.submit(class="btn btn-outline-dark") }}</p>
         </form>
     </body>
 </html>

@@ -2,8 +2,8 @@ from flask import Flask, render_template
 from contact_form.contact_form import bp_contact
 from contact_form.reply import bp_reply
 from index.index import bp_index
-from auth.auth import bp_auth
-from login.login import bp_login
+from auth.register import bp_auth
+from auth.login import bp_login
 
 from db.db import create_new_db, create_table_in_db, clear_table
 

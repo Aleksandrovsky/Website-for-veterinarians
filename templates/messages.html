@@ -1,5 +1,4 @@
-{% extends "navbar.html" %}
-
+{% extends "base.html" %}
 <!DOCTYPE html>
 <html lang="pl">
     <head>
@@ -8,11 +7,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Messages</title>
     </head>
-{% block content %}
-<body>
-    <header style="justify-content: center;">
-        <form action="" method="POST">
-
+    <body>
+        {% block content %}
+        <header style="justify-content: center;">
+            <form action="" method="POST">
+                
             {{ button.csrf_token }}
             
             {% for i in messages_site %}
